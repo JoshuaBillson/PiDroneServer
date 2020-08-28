@@ -8,10 +8,10 @@ this package into your ROS environment, directional messages received from the w
 * [picamera](https://www.flickr.com/photos/187266310@N04/50279435477/sizes/z/)
 
 # Controlling Your Robot
+![view](https://live.staticflickr.com/65535/50279435477_923eba405f_b.jpg)
 Below the video feed, you will see four button labled "Left", "Forward", "Reverse", "Right". Press a button to post the corresponding direction to 
 [robot_twist](#Topics). Press the same button again to stop. For example, if you pressed "Left", "Forward", "Forward" in that order, you would 
 turn left, then drive forward, then stop.
-![view](https://live.staticflickr.com/65535/50279435477_923eba405f_b.jpg)
 
 # <a name="Topics"></a>Topics
 ### robot_twist
