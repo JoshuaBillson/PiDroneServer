@@ -9,7 +9,7 @@ this package into your robot, directional messages received from the web interfa
 
 # Controlling Your Robot
 Below the video feed, you will see four button labled "Left", "Forward", "Reverse", "Right". Press a button to post the corresponding direction to 
-[/robot_twist](#Topics). Press the same button again to stop. For example, if you pressed "Left", "Forward", "Forward" in that order, you would 
+[robot_twist](#Topics). Press the same button again to stop. For example, if you pressed "Left", "Forward", "Forward" in that order, you would 
 turn left, then drive forward, then stop.
 
 # <a name="Topics"></a>Topics
@@ -27,5 +27,5 @@ rosrun pi_drone_server pi_drone_server
 
 # Sources
 The code for the video stream was forked from Miguel Grinberg's [flask-video-streaming](https://github.com/miguelgrinberg/flask-video-streaming). 
-You can read more about how this feature was implemented in his excellent [article](https://blog.miguelgrinberg.com/post/flask-video-streaming-revisited) 
+You can learn more about how this feature was implemented by reading his [article](https://blog.miguelgrinberg.com/post/flask-video-streaming-revisited) 
 on the subject.
