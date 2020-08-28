@@ -18,7 +18,7 @@ html = """<!DOCTYPE html>
 <div class="container-fluid my-0 mt-md-3 mx-0 py-0 pt-md-3 px-0 mb-0 pb-0">
     <div class="row align-content-center text-center mx-0">
         <div class="col-10 offset-1 col-md-8 offset-md-2">
-            <img class="img img-fluid" src="https://cdn.pixabay.com/photo/2019/11/10/16/47/nature-4616282_1280.jpg"
+            <img class="img img-fluid" src="/video_feed"
                  alt="viewport" style="max-height: 80vh;">
         </div>
         <div class="col-12 offset-md-2 col-md-8 py-1 my-1 align-content-center text-center">

@@ -9,8 +9,9 @@ import os
 from geometry_msgs.msg import Twist
 
 # Third Party Libraries
-from flask import Flask, request
+from flask import Flask, request, Response
 from pi_drone_server.html import html
+from pi_drone_server.camera import Camera
 
 # Globals
 current_speed = 0
@@ -23,6 +24,20 @@ direction = rospy.Publisher("robot_twist", Twist, queue_size=10)
 @app.route('/')
 def view():
     return html
+
+
+def gen(camera):
+    """Video streaming generator function."""
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+@app.route('/video_feed')
+def video_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
+    return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route("/control")
@@ -52,5 +67,5 @@ def control():
 
 def pi_drone_server():
     """Executable"""
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", threaded=True)
 
