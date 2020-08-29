@@ -18,7 +18,7 @@ html = """<!DOCTYPE html>
 <div class="container-fluid my-0 mt-md-3 mx-0 py-0 pt-md-3 px-0 mb-0 pb-0">
     <div class="row align-content-center text-center mx-0">
         <div class="col-10 offset-1 col-md-8 offset-md-2">
-            <img class="img img-fluid" src="/video_feed"
+            <img class="img img-fluid w-100" src="/video_feed"
                  alt="viewport" style="max-height: 80vh;">
         </div>
         <div class="col-12 offset-md-2 col-md-8 py-1 my-1 align-content-center text-center">
@@ -57,6 +57,14 @@ html = """<!DOCTYPE html>
         request.open("GET", "/control?speed=-1&turn=0");
         request.send();
     }
+
+    function ping() {
+        request.open("GET", "/ping");
+        request.send();
+    }
+
+    window.setInterval(ping, 500);
+
 </script>
 
 </body>

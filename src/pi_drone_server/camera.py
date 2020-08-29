@@ -54,13 +54,17 @@ class CameraEvent(object):
 
 
 class Camera(object):
+    resolution = "352x240"
+    framerate = 30
     thread = None  # background thread that reads frames from camera
     frame = None  # current frame is stored here by background thread
     last_access = 0  # time of last client access to the camera
     event = CameraEvent()
 
-    def __init__(self):
+    def __init__(self, resolution="352x240", framerate=30):
         """Start the background camera thread if it isn't running yet."""
+        Camera.resolution = resolution
+        Camera.framerate = framerate
         if Camera.thread is None:
             Camera.last_access = time.time()
 
@@ -88,7 +92,7 @@ class Camera(object):
         with picamera.PiCamera() as camera:
             # let camera warm up
             time.sleep(2)
-            camera.resolution = "640x480"
+            camera.resolution = Camera.resolution
             camera.vflip = True
             camera.hflip = True
 
@@ -101,6 +105,7 @@ class Camera(object):
                 # reset stream for next frame
                 stream.seek(0)
                 stream.truncate()
+                time.sleep(1.0 / Camera.framerate)
 
     @classmethod
     def _thread(cls):

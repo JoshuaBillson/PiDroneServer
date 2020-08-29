@@ -4,6 +4,7 @@ import rospy
 # Standard Python Libraries
 import threading
 import os
+import time
 
 # Messages
 from geometry_msgs.msg import Twist
@@ -16,9 +17,12 @@ from pi_drone_server.camera import Camera
 # Globals
 current_speed = 0
 current_turn = 0
+ping_time = 0
 app = Flask(__name__)
 
-threading.Thread(target=lambda: rospy.init_node('pi_drone_server', disable_signals=True)).start()
+# Constants
+TIMEOUT = 1.5 # Seconds
+
 direction = rospy.Publisher("robot_twist", Twist, queue_size=10)
 
 @app.route('/')
@@ -59,13 +63,36 @@ def control():
     current_turn = msg.angular.z
 
     # Start a New Thread To Publish The Twist Message
-    threading.Thread(target=lambda: direction.publish(msg)).start()
+    direction.publish(msg)
 
     # Return Code 204
     return ('', 204)
 
 
+@app.route("/ping")
+def ping():
+    global ping_time
+    ping_time = time.time()
+    return ('', 204)
+
+
+def timeout_thread():
+    global ping_time, current_speed, current_turn, direction, TIMEOUT
+    time.sleep(1)
+    while not rospy.is_shutdown():
+        if (time.time() - ping_time) > TIMEOUT:
+            current_speed = 0
+            current_turn = 0
+            msg = Twist()
+            msg.linear.x = 0
+            msg.angular.z = 0
+            direction.publish(msg)
+        time.sleep(1)
+
+
 def pi_drone_server():
     """Executable"""
+    threading.Thread(target=lambda: rospy.init_node('pi_drone_server', disable_signals=True)).start()
+    threading.Thread(target=timeout_thread).start()
     app.run(host="0.0.0.0", threaded=True)
 
