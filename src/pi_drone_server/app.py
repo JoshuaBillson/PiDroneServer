@@ -18,6 +18,7 @@ from pi_drone_server.camera import Camera
 current_speed = 0
 current_turn = 0
 ping_time = 0
+write_event = threading.Event()
 app = Flask(__name__)
 
 # Constants
@@ -46,24 +47,20 @@ def video_feed():
 
 @app.route("/control")
 def control():
-    global direction, current_speed, current_turn
-    # Initialize Message
-    msg = Twist()
-    msg.linear.x = 0
-    msg.angular.z = 0
-
-    # Decode Request
+    global direction, current_speed, current_turn, write_event
+    # Decode Speed
     if 'speed' in request.args and int(request.args["speed"]) != current_speed:
-        msg.linear.x = int(request.args["speed"])
+        current_speed = request.args["speed"]
+    else:
+        current_speed = 0
+    # Decode Turn
     if 'turn' in request.args and int(request.args["turn"]) != current_turn:
-        msg.angular.z = int(request.args["turn"])
+        current_turn = request.args["turn"]
+    else:
+        current_turn = 0
 
-    # Update Current Speed and Turn
-    current_speed = msg.linear.x
-    current_turn = msg.angular.z
-
-    # Start a New Thread To Publish The Twist Message
-    direction.publish(msg)
+    # Signal To ros_thread That New Directions Have Been Received
+    write_event.set()
 
     # Return Code 204
     return ('', 204)
@@ -77,22 +74,32 @@ def ping():
 
 
 def timeout_thread():
-    global ping_time, current_speed, current_turn, direction, TIMEOUT
-    time.sleep(1)
+    global ping_time, current_speed, current_turn, write_event, TIMEOUT
+    time.sleep(1) # We need to wait for the rospy node to initialize before running.
     while not rospy.is_shutdown():
         if (time.time() - ping_time) > TIMEOUT:
             current_speed = 0
             current_turn = 0
-            msg = Twist()
-            msg.linear.x = 0
-            msg.angular.z = 0
-            direction.publish(msg)
-        time.sleep(1)
+            write_event.set()
+        time.sleep(0.1)
+
+
+def ros_thread():
+    global current_speed, current_turn, write_event, direction
+    rospy.init_node('pi_drone_server', disable_signals=True)
+
+    while not rospy.is_shutdown():
+        write_event.wait()
+        msg = Twist()
+        msg.linear.x = float(current_speed)
+        msg.angular.z = float(current_turn)
+        direction.publish(msg)
+        write_event.clear()
 
 
 def pi_drone_server():
     """Executable"""
-    threading.Thread(target=lambda: rospy.init_node('pi_drone_server', disable_signals=True)).start()
+    threading.Thread(target=ros_thread).start()
     threading.Thread(target=timeout_thread).start()
     app.run(host="0.0.0.0", threaded=True)
 
