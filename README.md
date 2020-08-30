@@ -15,9 +15,11 @@ turn left, then drive forward, then stop.
 
 # <a name="Topics"></a>Topics
 ### robot_twist
-Encodes the robot's desired direction of motion with a [geometry_msgs/Twist](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Twist.html) message. 
-Linear motion is encoded in msg.linear.x with -1 corresponding to reverse and 1 corresponding to forward while angular motion is encoded in msg.angular.z 
-with -1 corresponding to right and 1 corresponding to left.
+
+Type: [geometry_msgs/Twist](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Twist.html)
+
+Encodes the robot's desired direction of motion. Linear motion is encoded in msg.linear.x with -1 corresponding to reverse and 1 corresponding to forward 
+while angular motion is encoded in msg.angular.z with -1 corresponding to right and 1 corresponding to left.
 
 # Nodes
 ### pi_drone_server
